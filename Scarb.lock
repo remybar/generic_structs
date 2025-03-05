@@ -2,5 +2,5 @@
 version = 1
 
 [[package]]
-name = "al"
+name = "generic_structs"
 version = "0.1.0"
