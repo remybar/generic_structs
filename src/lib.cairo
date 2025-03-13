@@ -1,4 +1,3 @@
-
 // 1- Define a generic struct
 #[derive(Drop, Serde)]
 struct GenericStruct<T> {
@@ -33,6 +32,8 @@ pub impl GenericStructDojoStore<
     +Serde<GenericStruct<T>>
 > of DojoStore<GenericStruct<T>> {
     fn ser(self: @GenericStruct<T>, ref serialized: Array<felt252>) {
+        // Here, we should use a custom implementation of generic struct serialization to
+        // call DojoStore::ser on every struct members.
         DojoStore::ser(self.value, ref serialized);
     }
 }
@@ -40,6 +41,8 @@ pub impl GenericStructDojoStore<
 // DojoStore impl generated for the `UseGeneric` struct (through a derive attribute)
 impl UseGenericDojoStore of DojoStore<UseGeneric> {
     fn ser(self: @UseGeneric, ref serialized: Array<felt252>) {
+        // Here, we should use a custom implementation of struct serialization to
+        // call DojoStore::ser on every struct members.
         DojoStore::ser(self.x, ref serialized);
         DojoStore::ser(self.y, ref serialized);
     }
@@ -63,11 +66,16 @@ impl UseGenericDojoStore of DojoStore<UseGeneric> {
 //    }
 //}
 
+#[derive(Drop, Serde)]
+enum E1 {
+    X,
+    Y
+}
+
 fn main() {
-    let s = UseGeneric { 
-        x: 12,
-        y: GenericStruct::<u8> { value: 43}
-    };
     let mut serialized = array![];
-    DojoStore::<UseGeneric>::ser(@s, ref serialized);
+
+    let x = E1::X;
+    Serde::serialize(@x, ref serialized);
+    println!("serialized: {:?}", serialized)
 }
